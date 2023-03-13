@@ -3,8 +3,22 @@
 ## 🐣 Getting Started
 
 Go through the following steps to begin 
+
 ### 1. Generate Synthetical Geospatial data in a format (Color, Longitude, Latitude). 
-### 2. View Generated Geospatial Data:
+### 2 As an example hereafter is shown a case with 10m generated geo records:
+```commandline
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 10000000 entries, 0 to 9999999
+Data columns (total 3 columns):
+ #   Column  Dtype  
+---  ------  -----  
+ 0   color   object 
+ 1   lat     float64
+ 2   lng     float64
+dtypes: float64(2), object(1)
+memory usage: 741.1 MB
+```
+### 2.1 View Generated Geospatial Data:
 ```commandline
 color	lat	lng
 black	-2.4	-1.2
@@ -23,9 +37,11 @@ blue	-1.0	4.1
 white	3.2	-1.3
 blue	3.4	4.2
 ```
-### 3. Instantiate a `Haversine` class object
-### 4. Split initial dataset on batches using `df_grouped_split` method 
-### Run A Max distance calculation over pairs of points usgin `calc_df_w_max_dist` method. Obtain a DataFrame object being grouped by the color tag and storing calculated max distance and centroid values 
+### 3. Instantiate a main `Haversine(df)` class object by providing a generated geo-DataFrame on input args.
+### 4. To speed up the calc process we'll split the initial dataset on XXX batches using `df_grouped_split` method.
+### 5. Run A Max distance calculation over pairs of points. 
+- Method `Haversine.calc_df_w_max_dist()` calls itself a class batch function `self.parallelize_df_grouped(self.__df_w_max_dist)` with hidden class fucntion `__df_w_max_dist` prvided on the input that calculates a max distance withing each batch.
+- Finally we can obtain a DataFrame object being grouped by the color tag and storing calculated max distance and centroid values: child class instance will have a new attribute `Haversine.__dict__.df_w_max_dist` that stores the aggregated DF with max distance and centroids.  
 ### 5. View Agg DataFRame with Max Distance and Centroid:
 ```commandline
 color	dist	centroid
@@ -37,12 +53,16 @@ red	2.162102e+06	(-0.7022535620006337, -0.050632744150717716)
 ```
 ### 6. Show Color Label of element with max distance using `get_color` method
 ### 7. Show Centroid of element with max distance: `get_centroid` method
-```
+```commandline
 Color Label of element with max distance:
 No Need to Calc an Agg DataFrame. Already pre-calc
 yellow
 Centroid of element with max distance:
 No Need to Calc an Agg DataFrame. Already pre-calc
 (-2.029313929423414, 0.8413364902024645)
-Code block 'Calc Haversine distance' took: 234321.4952093549 ms
+```
+
+## Using the current approach with traversing over a pairs of [(LAT1, LNG1), (LAT2, LNG2)] points and rocessing 10_000_000 geospatial records takes: 
+```commandline
+Code block 'Calc Haversine distance' took:  ms
 ```

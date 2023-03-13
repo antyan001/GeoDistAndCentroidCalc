@@ -32,7 +32,7 @@ get_color = {0: "red",
              6: "white"
             }
 
-SIZE = 100_000 # 100_000_000
+SIZE = 10_000_000 # 100_000_000
 
 print("Generate a Synthetic Geospatial data")
 

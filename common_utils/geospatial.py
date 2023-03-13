@@ -102,7 +102,7 @@ class Haversine(object):
 
         return (d, cetr)
 
-    def df_grouped_split(self, num_part=6):
+    def df_grouped_split(self, num_part: int = 6):
         """
         Split DataFrame obj onto batches
         """
@@ -114,9 +114,9 @@ class Haversine(object):
         return collection        
 
     def parallelize_df_grouped(self,
-                               func=None,
-                               num_part=10, 
-                               num_workers=10):
+                               func = None,
+                               num_part: int = 10, 
+                               num_workers: int = 10) -> List[pd.core.frame.DataFrame]:
         
         """
         Function for parallelizing mapped operations using pandas multiprocessing
@@ -130,7 +130,7 @@ class Haversine(object):
         
         return pred_dicts_list    
     
-    def __df_w_max_dist(self, df):
+    def __df_w_max_dist(self, df: pd.core.frame.DataFrame) -> pd.core.frame.DataFrame:
         """
         Given batch Dataframe obj generated a new DataFrame object with dist and centroid 
         """
@@ -152,7 +152,7 @@ class Haversine(object):
         self.df_w_max_dist = df_
 
     
-    def get_df_w_max_dist(self):
+    def get_df_w_max_dist(self) -> pd.core.frame.DataFrame:
         if hasattr(self, 'df_w_max_dist'):
             print("No Need to Calc an Agg DataFrame. Already pre-calc")
             return self.df_w_max_dist
