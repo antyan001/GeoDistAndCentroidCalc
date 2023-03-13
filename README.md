@@ -62,7 +62,7 @@ No Need to Calc an Agg DataFrame. Already pre-calc
 (-2.029313929423414, 0.8413364902024645)
 ```
 
-## Using the current approach with traversing over a pairs of [(LAT1, LNG1), (LAT2, LNG2)] points and rocessing 10_000_000 geospatial records takes: 
+Using the current approach with traversing over a pairs of `[(LAT1, LNG1), (LAT2, LNG2)]` points and processing 10_000_000 geospatial records takes: 
 ```commandline
 Code block 'Calc Haversine distance' took:  ms
 ```
