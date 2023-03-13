@@ -54,11 +54,14 @@ red	2.162102e+06	(-0.7022535620006337, -0.050632744150717716)
 ### 6. Show Color Label of element with max distance using `get_color` method
 ### 7. Show Centroid of element with max distance: `get_centroid` method
 ```commandline
+No Need to Calc an Agg DataFrame. Already pre-calc
+
 Color Label of element with max distance:
-No Need to Calc an Agg DataFrame. Already pre-calc
+
 yellow
+
 Centroid of element with max distance:
-No Need to Calc an Agg DataFrame. Already pre-calc
+
 (-2.029313929423414, 0.8413364902024645)
 ```
 

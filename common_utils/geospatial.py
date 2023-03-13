@@ -30,10 +30,19 @@ def combinations(l: list, k: int) -> List[Tuple[float, float]]:
 class Haversine(object):
   
     def __init__(self, df: pd.core.frame.DataFrame):
+        '''
+        Accepts a df object in the following format:
+        ================
+        color  lat   lng
+        black  -2.4  -1.2
+        yellow 1.9   2.0
+        ================
+        '''
+        
         self.df = df
     
     @staticmethod
-    def calc_centroid(*args):
+    def calc_centroid(*args) -> Tuple[float, float]:
         """
         Calculate centroid of the vector between two geodesical points
         """
@@ -72,14 +81,14 @@ class Haversine(object):
         max_dist = 0
         for i, ele in enumerate(coords):
 
-            lat1, lon1 = ele[0][0], ele[0][1]
-            lat2, lon2 = ele[1][0], ele[1][1]
+            lat1, lon1 = list(map(math.radians, ele[0]))
+            lat2, lon2 = list(map(math.radians, ele[1]))
             #const R = 6371e3; // metres
             R = 6371e3 # m
-            dlat = math.radians(lat2-lat1)
-            dlon = math.radians(lon2-lon1)
+            dlat = lat2-lat1
+            dlon = lon2-lon1
             a = math.sin(dlat/2)**2 + \
-                math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2)**2
+                math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
             c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
             d = R * c
             if d > max_dist: 
@@ -102,7 +111,7 @@ class Haversine(object):
 
         return (d, cetr)
 
-    def df_grouped_split(self, num_part: int = 6):
+    def df_grouped_split(self, num_part=6):
         """
         Split DataFrame obj onto batches
         """
@@ -114,9 +123,9 @@ class Haversine(object):
         return collection        
 
     def parallelize_df_grouped(self,
-                               func = None,
-                               num_part: int = 10, 
-                               num_workers: int = 10) -> List[pd.core.frame.DataFrame]:
+                               func=None,
+                               num_part=20, 
+                               num_workers=20):
         
         """
         Function for parallelizing mapped operations using pandas multiprocessing
@@ -130,7 +139,7 @@ class Haversine(object):
         
         return pred_dicts_list    
     
-    def __df_w_max_dist(self, df: pd.core.frame.DataFrame) -> pd.core.frame.DataFrame:
+    def __df_w_max_dist(self, df):
         """
         Given batch Dataframe obj generated a new DataFrame object with dist and centroid 
         """
@@ -152,7 +161,7 @@ class Haversine(object):
         self.df_w_max_dist = df_
 
     
-    def get_df_w_max_dist(self) -> pd.core.frame.DataFrame:
+    def get_df_w_max_dist(self):
         if hasattr(self, 'df_w_max_dist'):
             print("No Need to Calc an Agg DataFrame. Already pre-calc")
             return self.df_w_max_dist
