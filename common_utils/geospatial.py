@@ -6,6 +6,7 @@ import pandas as pd
 import pyarrow as pa
 import numpy as np
 import scipy.stats as ss
+from scipy.spatial import ConvexHull
 import hashlib 
 import uuid
 import math
@@ -40,22 +41,36 @@ class Haversine(object):
         '''
         
         self.df = df
-    
-    @staticmethod
-    def calc_centroid(*args) -> Tuple[float, float]:
+        self.R = 1. #6371e3 # m
+
+    def geo_to_xyz(self, lat, lon) -> Tuple[float, float, float]:
+        """
+        Convert geodesical points to Euclidean coord space
+        """
+
+        #Convert lat/lon (must be in radians) to Cartesian coordinates for each location.
+        lat, lon = list(map(math.radians, (lat, lon)))
+        
+        X = self.R * math.cos(lat) * math.cos(lon)
+        Y = self.R * math.cos(lat) * math.sin(lon)
+        Z = self.R * math.sin(lat)
+        
+        return (X, Y, Z)        
+        
+    def calc_centroid(self, *args) -> Tuple[float, float]:
         """
         Calculate centroid of the vector between two geodesical points
         """
-        
+
         lat1, lat2, lon1, lon2 = args
         #Convert lat/lon (must be in radians) to Cartesian coordinates for each location.
-        X1 = math.cos(lat1) * math.cos(lon1)
-        Y1 = math.cos(lat1) * math.sin(lon1)
-        Z1 = math.sin(lat1)
+        X1 = self.R * math.cos(lat1) * math.cos(lon1)
+        Y1 = self.R * math.cos(lat1) * math.sin(lon1)
+        Z1 = self.R * math.sin(lat1)
 
-        X2 = math.cos(lat2) * math.cos(lon2)
-        Y2 = math.cos(lat2) * math.sin(lon2)
-        Z2 = math.sin(lat2)
+        X2 = self.R * math.cos(lat2) * math.cos(lon2)
+        Y2 = self.R * math.cos(lat2) * math.sin(lon2)
+        Z2 = self.R * math.sin(lat2)
         
         #Compute average x, y and z coordinates.
         x = (X1 + X2) / 2
@@ -71,7 +86,7 @@ class Haversine(object):
     
 
     def __distance(self, coords: List[Tuple[Tuple[float, float],
-                                          Tuple[float, float]]]) -> float:
+                                            Tuple[float, float]]]) -> float:
         """
         Calc distance between two pairs of geodesical points using Haversine formula.
         Shouldn't be called directly. 
@@ -84,13 +99,12 @@ class Haversine(object):
             lat1, lon1 = list(map(math.radians, ele[0]))
             lat2, lon2 = list(map(math.radians, ele[1]))
             #const R = 6371e3; // metres
-            R = 6371e3 # m
             dlat = lat2-lat1
             dlon = lon2-lon1
             a = math.sin(dlat/2)**2 + \
                 math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
             c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-            d = R * c
+            d = self.R * c
             if d > max_dist: 
                 max_dist = d
                 coords = [lat1, lat2, lon1, lon2]
@@ -160,7 +174,6 @@ class Haversine(object):
         df_ = pd.concat(res)
         self.df_w_max_dist = df_
 
-    
     def get_df_w_max_dist(self):
         if hasattr(self, 'df_w_max_dist'):
             print("No Need to Calc an Agg DataFrame. Already pre-calc")
